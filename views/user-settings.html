@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/user.css">
+    <title>HydraSMS</title>
+</head>
+<body>
+    <div class="content-container">
+        <div class="title-container">
+            <h1>User Settings</h1>
+        </div>
+        <div class="content">
+            <h6 id="error-msg">You Cannot Leave This Field Blank</h6>
+            <label for="Username">Username: </label>
+            <input type="text" name="Username" class="username" maxlength="13" id="username">
+            <p></p>
+            <div class="card">
+                <img src="/imgs/default-user-img.svg" id="pfp">
+                <h1 id="user"></h1>
+                <input type="file" id="file" style="display: none;" accept="image/jpeg, image/png, image/svg" spellcheck="false">
+                <button onclick="ChangePhoto()">Change Photo</button>
+            </div>
+            <div class="btn-container">
+                <button class="bottom-btn" id="sign-out">Sign Out</button>
+                <button class="bottom-btn" id="done">Save And Close</button>
+            </div>
+        </div>
+    </div>
+    <script src="/scripts/user.js"></script>
+    <script type = "module" src="/server/settings.js"></script>
+</body>
+</html>
