@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js';
 import { getDatabase } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-auth.js";
-
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-storage.js"
 const fileInput = document.getElementById('file')
 const pfp = document.getElementById('pfp')
 const done = document.getElementById('done')
@@ -9,11 +9,11 @@ const err = document.getElementById("error-msg")
 const signoutBtn = document.getElementById('sign-out')
 const userTxt = document.getElementById('user')
 const UserInput = document.getElementById('username')
+let file;
 let username = "";
-//let pfplink = "";
 let blobURL
-let newimage = false;
-let User
+let pfpRef
+let newImage = false;
 
 const firebaseConfig = {
     apiKey: "AIzaSyAdna8cjCjq4D4gimsSGuqIuhO5isTKDhg",
@@ -28,6 +28,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const database = getDatabase(app);
 const auth = getAuth();
+const storage = getStorage(app);
+
+
 
 const user = auth.currentUser;
 if (user !== null) {
@@ -42,18 +45,25 @@ if (user !== null) {
     // you have one. Use User.getToken() instead.
     const uid = user.uid;
   }
+  
 
-function LoadInfo(user) {
-  console.log(user.photoURL)
-  pfp.src = user.photoURL
-}
+
 
 onAuthStateChanged(auth, (user) => {
-  LoadInfo(auth.currentUser)
-    if (user) {
+      if (user) {
       const uid = user.uid;
       UserInput.value = auth.currentUser.displayName;
       userTxt.innerHTML = auth.currentUser.displayName;
+
+      //get pfp
+      getDownloadURL(ref(storage, auth.currentUser.uid))
+              .then((url) => {
+                pfp.setAttribute('src', url);
+              })
+              .catch((error) => {
+                console.log(error)
+              });
+
     } else {
       window.location = '/views/index.html'
     }
@@ -69,55 +79,48 @@ done.addEventListener("click", () => {
       username = UserInput.value;
       //update pfp settings
         updateProfile(auth.currentUser, {
-            displayName: username, photoURL: blobURL
+            displayName: username,
+            test: 2
           }).then(() => {
             err.style.color = "lime";
             err.innerHTML = "Profile Successfully Updated";
             err.style.display = "block";
             UserInput.value = auth.currentUser.displayName;
             userTxt.innerHTML = auth.currentUser.displayName;
-            if (newimage === true) {
-              const img = new Image();
-              img.src = blobURL;
-              const canvas = document.createElement('canvas');
-              canvas.width = 80;
-              canvas.height = 80;
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, 80, 80);
-              newimage = false;
-            }
 
+            if (newImage === true) {
+              //pfp
+            uploadBytes(ref(storage, auth.currentUser.uid), file).then((snapshot) => {
+              console.log("Profile picture successfully uploaded")
+            }).catch((error) => {
+              err.style.color = "red";
+            err.innerHTML = error;
+            err.style.display = "block";
+            })
+            newImage = false;
+            }
           }).catch((error) => {
             console.log(error)
             err.style.color = "red";
             err.innerHTML = error;
             err.style.display = "block";
-            const img = new Image();
-            img.src = blobURL;
-            const canvas = document.createElement('canvas');
-            canvas.width = 80;
-            canvas.height = 80;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, 80, 80);
-            pfp.src = img.src;
           });
+          setTimeout(() => {
+            window.location = '/views/chat.html'
+          }, 2000);
     }
 
 })
 
 //for pfp
 fileInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
+    file = e.target.files[0];
     blobURL = window.URL.createObjectURL(file);
-    newimage = true;
     const img = new Image();
     img.src = blobURL;
-    const canvas = document.createElement('canvas');
-    canvas.width = 80;
-    canvas.height = 80;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, 80, 80);
-    pfp.src = img.src;
+    pfp.src = img.src
+    newImage = true;
+    return file;
 })
 
 signoutBtn.addEventListener("click", () => {
