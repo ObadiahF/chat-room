@@ -58,7 +58,11 @@ onAuthStateChanged(auth, (user) => {
       //get pfp
       getDownloadURL(ref(storage, auth.currentUser.uid))
               .then((url) => {
-                pfp.setAttribute('src', url);
+                if (url == undefined) {
+                  pf.setAttribute('src', "/img/default-user-img.svg")
+                } else {
+                  pfp.setAttribute('src', url);
+                }
               })
               .catch((error) => {
                 console.log(error)
@@ -87,7 +91,16 @@ done.addEventListener("click", () => {
             err.style.display = "block";
             UserInput.value = auth.currentUser.displayName;
             userTxt.innerHTML = auth.currentUser.displayName;
+            if (file == undefined) {
 
+              uploadBytes(ref(storage, auth.currentUser.uid), "https://firebasestorage.googleapis.com/v0/b/hydrasms-f200e.appspot.com/o/user-svgrepo-com.svg?alt=media&token=1d8446cf-084d-4e51-8d20-83016df832cc").then((snapshot) => {
+                console.log("Profile picture successfully uploaded")
+              }).catch((error) => {
+                err.style.color = "red";
+              err.innerHTML = error;
+              err.style.display = "block";
+              })
+            }
             if (newImage === true) {
               //pfp
             uploadBytes(ref(storage, auth.currentUser.uid), file).then((snapshot) => {
@@ -98,6 +111,7 @@ done.addEventListener("click", () => {
             err.style.display = "block";
             })
             newImage = false;
+            } else {
             }
           }).catch((error) => {
             console.log(error)

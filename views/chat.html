@@ -8,7 +8,25 @@
     <link rel="stylesheet" href="/styles/chat.css">
 </head>
 <body>
-    <h1>hello world</h1>
+    <div class="background">
+        <button class="top-btn">Logout</button>
+        <button class="top-btn">Settings</button>
+        <div class="promo">
+            <h1>This Application Was Made By Obadiah F.</h1>
+            <p>Like What You See? Check Out My <a href="https://github.com/ObadiahF" target="_blank" rel="noopener noreferrer"">Github.</a> </p>
+        </div>
+
+        <div class="content">
+            <div class="chat" id="chat">
+            </div>
+            
+            <div class="text">
+                <input type="text" id="input" placeholder="Say Something Nice">
+                <button id="send">Send</button>
+            </div>
+        </div>
+    </div>
+    <script src="/scripts/chat.js"></script>
     <script type="module" src="/server/chat-server.js"></script>
 </body>
 </html>
